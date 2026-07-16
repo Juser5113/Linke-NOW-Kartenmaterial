@@ -20,6 +20,12 @@
  *   <input type="checkbox" id="toggle-tooltip">  – schaltet permanente
  *   Namens-Tooltips direkt auf der Karte ein/aus (Beschriftung ohne Hover).
  *   Fehlt die Checkbox auf der Seite, hat das keine Auswirkung.
+ *   <div id="legend-body"></div>  – Ziel-Container für die Sidebar.
+ *   Wird je nach sidebarMode komplett unterschiedlich befüllt:
+ *     'legend' -> <ul><li> mit Farbfeld + Name + Link
+ *     'info'   -> pro Feature nur ein <div class="info-entry"> mit dem
+ *                 rohen Bemerkungen-HTML, sonst nichts (kein ul/li,
+ *                 kein Name, kein Farbfeld, kein Link)
  *
  * Erwartete Properties je Feature in der GeoJSON (alle optional):
  *   name           -> Überschrift im Popup UND in der Sidebar
@@ -151,29 +157,80 @@ function initKartenseite(config) {
     // Baut die Sidebar aus den gesammelten Einträgen und verdrahtet
     // Sidebar -> Karte: Hover über einen Eintrag hebt das zugehörige
     // Polygon/Marker auf der Karte hervor.
-    //   mode 'legend' -> Farbfeld + Name + Link (Übersichtsseite)
-    //   mode 'info'   -> Name + Bemerkungen als rohes HTML (Unterseiten)
+    //   mode 'legend' -> <ul><li> mit Farbfeld + Name + Link (Übersichtsseite)
+    //   mode 'info'   -> pro Feature EIN <div> mit rohem Bemerkungen-HTML,
+    //                     ohne ul/li, ohne Name-Element, ohne Farbfeld/Link
     function renderLegend(entries, mode) {
         console.log('[Kartenseite] renderLegend() mit mode =', mode, ', Anzahl Einträge:', entries.length);
-        const list = document.getElementById('legend-list');
-        if (!list) return; // Seite ohne Sidebar -> einfach überspringen
+        const container = document.getElementById('legend-body');
+        if (!container) return; // Seite ohne Sidebar -> einfach überspringen
 
-        list.innerHTML = '';
+        container.innerHTML = '';
 
-        if (entries.length === 0) {
-            const empty = document.createElement('li');
-            empty.className = 'legend-empty';
-            empty.textContent = 'Keine benannten Objekte auf dieser Karte.';
-            list.appendChild(empty);
+        // Verdrahtet Hover/Klick auf ein beliebiges Sidebar-Element (li ODER div)
+        // mit dem zugehörigen Karten-Layer.
+        function wireInteraction(el, entry) {
+            entry.li = el; // Rückreferenz für Karte -> Sidebar-Highlighting (s.o.)
+            el.addEventListener('mouseenter', () => {
+                el.classList.add('legend-hover');
+                entry.layer.setStyle(highlightStyle(entry.baseStyle));
+                if (entry.layer.bringToFront) entry.layer.bringToFront();
+            });
+            el.addEventListener('mouseleave', () => {
+                el.classList.remove('legend-hover');
+                entry.layer.setStyle(entry.baseStyle);
+            });
+            el.addEventListener('click', () => {
+                entry.layer.openPopup(
+                    entry.layer.getBounds ? entry.layer.getBounds().getCenter() : entry.layer.getLatLng()
+                );
+            });
+        }
+
+        if (mode === 'info') {
+            // Nur Einträge mit tatsächlichem Bemerkungen-Inhalt berücksichtigen.
+            const withRemarks = entries.filter(e => e.remarks);
+            console.log('[Kartenseite] info-Modus: Einträge mit Bemerkungen:', withRemarks.length);
+
+            if (withRemarks.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'legend-empty';
+                empty.textContent = 'Keine Bemerkungen vorhanden.';
+                container.appendChild(empty);
+                return;
+            }
+
+            withRemarks.forEach(entry => {
+                // Bewusst NUR ein div, keine ul/li, kein Name-Element, kein
+                // Farbfeld, kein Link – nur das rohe Bemerkungen-HTML.
+                const div = document.createElement('div');
+                div.className = 'info-entry';
+                div.innerHTML = entry.remarks; // bewusst ungeschützt, s. Kopfkommentar
+                container.appendChild(div);
+                wireInteraction(div, entry);
+            });
             return;
         }
+
+        // --- mode === 'legend' ---
+        if (entries.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'legend-empty';
+            empty.textContent = 'Keine benannten Objekte auf dieser Karte.';
+            container.appendChild(empty);
+            return;
+        }
+
+        const ul = document.createElement('ul');
 
         entries.forEach(entry => {
             const li = document.createElement('li');
 
-            console.log('[Kartenseite] rendere Eintrag:', entry.name,
-                '| mode:', mode, '| remarks vorhanden:', !!entry.remarks,
-                '| remarks-Inhalt:', entry.remarks);
+            const swatch = document.createElement('span');
+            swatch.className = 'legend-swatch';
+            swatch.style.background = entry.color;
+            swatch.style.borderColor = entry.color;
+            li.appendChild(swatch);
 
             const text = document.createElement('span');
             text.className = 'legend-text';
@@ -183,63 +240,25 @@ function initKartenseite(config) {
             nameEl.textContent = entry.name;
             text.appendChild(nameEl);
 
-            if (mode === 'info') {
-                // Bemerkungen bewusst als rohes HTML einsetzen (kein Escaping) –
-                // die Redaktion soll hier direkt formatieren können. Nur befüllen,
-                // wenn Inhalt vorhanden ist.
-                if (entry.remarks) {
-                    const remarksEl = document.createElement('div');
-                    remarksEl.className = 'legend-remarks';
-                    remarksEl.innerHTML = entry.remarks;
-                    text.appendChild(remarksEl);
-                }
-            } else {
-                // Farbfeld nur im legend-Modus – im info-Modus soll die Sidebar
-                // nicht wie eine klassische Legende aussehen.
-                const swatch = document.createElement('span');
-                swatch.className = 'legend-swatch';
-                swatch.style.background = entry.color;
-                swatch.style.borderColor = entry.color;
-                li.appendChild(swatch);
-
-                if (entry.link) {
-                    const linkEl = document.createElement('a');
-                    linkEl.className = 'legend-link';
-                    linkEl.href = entry.link;
-                    linkEl.target = '_blank';
-                    linkEl.rel = 'noopener';
-                    linkEl.textContent = entry.link;
-                    // Klick auf den Link soll nicht zusätzlich den Hover-Handler des
-                    // <li> auslösen bzw. dessen Klick-Verhalten stören:
-                    linkEl.addEventListener('click', ev => ev.stopPropagation());
-                    text.appendChild(linkEl);
-                }
+            if (entry.link) {
+                const linkEl = document.createElement('a');
+                linkEl.className = 'legend-link';
+                linkEl.href = entry.link;
+                linkEl.target = '_blank';
+                linkEl.rel = 'noopener';
+                linkEl.textContent = entry.link;
+                // Klick auf den Link soll nicht zusätzlich den Hover-Handler des
+                // <li> auslösen bzw. dessen Klick-Verhalten stören:
+                linkEl.addEventListener('click', ev => ev.stopPropagation());
+                text.appendChild(linkEl);
             }
 
             li.appendChild(text);
-            list.appendChild(li);
-
-            entry.li = li; // Rückreferenz für Karte -> Sidebar-Highlighting (s.o.)
-
-            // Sidebar -> Karte: Hover über den Eintrag hebt das Polygon/den
-            // Marker auf der Karte hervor.
-            li.addEventListener('mouseenter', () => {
-                li.classList.add('legend-hover');
-                entry.layer.setStyle(highlightStyle(entry.baseStyle));
-                if (entry.layer.bringToFront) entry.layer.bringToFront();
-            });
-            li.addEventListener('mouseleave', () => {
-                li.classList.remove('legend-hover');
-                entry.layer.setStyle(entry.baseStyle);
-            });
-
-            // Klick auf den Eintrag öffnet zusätzlich das Popup an der passenden Stelle.
-            li.addEventListener('click', () => {
-                entry.layer.openPopup(
-                    entry.layer.getBounds ? entry.layer.getBounds().getCenter() : entry.layer.getLatLng()
-                );
-            });
+            ul.appendChild(li);
+            wireInteraction(li, entry);
         });
+
+        container.appendChild(ul);
     }
 
     const loading = statusMsg('Karte wird geladen …');

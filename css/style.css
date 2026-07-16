@@ -184,6 +184,34 @@ nav.topnav .brand {
     margin-bottom: 0;
 }
 
+/* --- info-Modus: reine Bemerkungen-Anzeige, ein div pro Feature --- */
+.legend .info-entry {
+    padding: 8px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+.legend .info-entry:hover,
+.legend .info-entry.legend-hover {
+    background: #f3f4f6;
+}
+
+.legend .info-entry a {
+    color: var(--accent);
+}
+
+.legend .info-entry p {
+    margin: 0 0 8px 0;
+}
+
+.legend .info-entry p:last-child {
+    margin-bottom: 0;
+}
+
 .legend .legend-empty {
     font-size: 0.85rem;
     color: #6b7280;
