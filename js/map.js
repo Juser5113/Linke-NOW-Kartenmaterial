@@ -25,6 +25,8 @@
  *                     die die Redaktion selbst pflegt (kein Fremd-Input!).
  *   bild           -> Bild-URL (relativ z.B. "img/foto.jpg" oder absolut)
  *   link           -> "Mehr erfahren"-Link (Popup + Sidebar im "legend"-Modus)
+ *   visibility     -> false blendet das Feature komplett aus (Karte + Sidebar);
+ *                     fehlt die Property oder ist sie true, wird angezeigt (Default: true)
  *
  * Farb-/Stil-Properties (simplestyle-spec, werden von geojson.io beim
  * Einfärben im Editor automatisch selbst gesetzt – nicht manuell eintragen):
@@ -235,6 +237,9 @@ function initKartenseite(config) {
             const legendEntries = [];
 
             const layer = L.geoJSON(data, {
+                // visibility: false blendet ein Feature komplett aus (Karte +
+                // Sidebar). Fehlt die Property oder ist sie true -> anzeigen.
+                filter: feature => (feature.properties || {}).visibility !== false,
                 // Nutzt die simplestyle-spec-Properties, die geojson.io beim
                 // Einfärben im Editor automatisch selbst setzt:
                 // stroke, stroke-width, stroke-opacity, fill, fill-opacity, marker-color
