@@ -65,18 +65,21 @@ Der ist für geringen Traffic in Ordnung, hat aber keine Verfügbarkeits-
 garantie. Bei mehr Traffic auf OpenFreeMap umsteigen – Anleitung dazu
 als Kommentar am Ende von `js/map.js`.
 
-## Versionsnummern von map.js / js/config/*.js synchron halten
+## Versionsnummern von map.js / js/config/*.js / style.css synchron halten
 
-Jede HTML-Seite bindet `js/map.js` und ihre eigene `js/config/*.js`-Datei
-mit einer `?v=…`-Versionsnummer im `<script src="...">` ein (Cache-Busting).
-Alle diese Scripts (map.js **und** sämtliche js/config/*.js-Dateien, über
+Jede HTML-Seite bindet `js/map.js`, `css/style.css` und ihre eigene
+`js/config/*.js`-Datei mit einer `?v=…`-Versionsnummer im
+`<script src="...">`/`<link href="...">` ein (Cache-Busting). Alle diese
+Dateien (map.js, style.css **und** sämtliche js/config/*.js-Dateien, über
 alle Seiten hinweg) teilen sich **eine gemeinsame** Versionsnummer. Ein
 pre-commit-Hook (`.githooks/pre-commit`) sorgt automatisch dafür, dass beim
 Commit überall dieselbe Nummer steht – es gewinnt immer die höchste
-irgendwo gefundene Version. Ändert man z.B. in `index.html` `js/map.js?v=1.0.4`
+irgendwo gefundene Version. Fehlt bei einer Referenz das `?v=...` noch
+ganz, wird es ergänzt. Ändert man z.B. in `index.html` `js/map.js?v=1.0.4`
 auf `?v=1.0.5`, schreibt der Hook beim nächsten `git commit` `?v=1.0.5` in
-jedes `<script src="...">` von map.js und jeder js/config/*.js-Datei in
-jeder HTML-Datei und staged die Änderungen mit.
+jedes `<script src="...">`/`<link href="...">` von map.js, style.css und
+jeder js/config/*.js-Datei in jeder HTML-Datei und staged die Änderungen
+mit.
 
 Einmalig nach dem Klonen aktivieren:
 
