@@ -3,7 +3,7 @@
 // hochzählen (z.B. ?v=1 -> ?v=2), sonst liefert der Browser evtl. die
 // gecachte alte Version aus.
 initKartenseite({
-    geojson: 'data/uebersicht.geojson',
+    geojson: 'data/steckgebiet-1.geojson',
     center: [52.56752, 13.56139],
     zoom: 16,
     fitToData: false,
