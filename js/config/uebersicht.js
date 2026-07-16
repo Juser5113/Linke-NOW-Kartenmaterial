@@ -5,6 +5,6 @@
 initKartenseite({
     geojson: 'data/uebersicht.geojson',
     center: [52.541, 13.567],
-    zoom: 17,
+    zoom: 15,
     fitToData: false
 });
