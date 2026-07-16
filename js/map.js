@@ -17,8 +17,9 @@
  * }
  *
  * Optionales Markup in der HTML-Seite:
- *   <input type="checkbox" id="toggle-tooltip">  – schaltet permanente
- *   Namens-Tooltips direkt auf der Karte ein/aus (Beschriftung ohne Hover).
+ *   <input type="checkbox" id="toggle-tooltip">  – ohne Häkchen ist der
+ *   Name-Tooltip komplett aus (auch nicht bei Hover). Mit Häkchen werden
+ *   permanente Namens-Labels direkt auf der Karte eingeblendet.
  *   Fehlt die Checkbox auf der Seite, hat das keine Auswirkung.
  *   <div id="legend-body"></div>  – Ziel-Container für die Sidebar.
  *   Wird je nach sidebarMode komplett unterschiedlich befüllt:
@@ -314,16 +315,15 @@ function initKartenseite(config) {
                             baseStyle
                         });
 
-                        // Name-Tooltip vorbereiten (noch nicht permanent sichtbar –
-                        // das steuert der Toggle weiter unten). sticky: folgt der Maus.
-                        lyr.bindTooltip(escapeHtml(p.name), {
-                            permanent: false,
-                            direction: isPoint ? 'right' : 'center',
-                            offset: isPoint ? [10, 0] : [0, 0],
-                            className: 'feature-tooltip',
-                            sticky: true
+                        // Tooltip wird NICHT hier gebunden – standardmäßig ist der
+                        // Tooltip komplett aus (auch nicht bei Hover). Erst der Toggle
+                        // weiter unten bindet ihn bei Aktivierung und entfernt ihn bei
+                        // Deaktivierung wieder vollständig.
+                        tooltipLayers.push({
+                            layer: lyr,
+                            name: escapeHtml(p.name),
+                            isPoint
                         });
-                        tooltipLayers.push(lyr);
                     }
 
                     // Karte -> Legende: beim Hover über das Polygon/den Marker den
@@ -344,21 +344,25 @@ function initKartenseite(config) {
 
             renderLegend(legendEntries, sidebarMode);
 
-            // Toggle "Namen auf der Karte anzeigen": schaltet permanente
-            // Tooltips für alle benannten Features ein/aus. Checkbox ist
-            // optional – Seiten ohne #toggle-tooltip funktionieren unverändert.
+            // Toggle "Namen auf der Karte anzeigen": bindet permanente Tooltips
+            // für alle benannten Features bzw. entfernt sie wieder vollständig.
+            // Standardzustand (Checkbox aus) = gar kein Tooltip, auch nicht bei
+            // Hover. Checkbox ist optional – Seiten ohne #toggle-tooltip
+            // funktionieren unverändert.
             const tooltipToggle = document.getElementById('toggle-tooltip');
             if (tooltipToggle) {
                 tooltipToggle.addEventListener('change', () => {
-                    tooltipLayers.forEach(lyr => {
-                        const tooltip = lyr.getTooltip();
-                        if (!tooltip) return;
-                        tooltip.options.permanent = tooltipToggle.checked;
-                        tooltip.options.sticky = !tooltipToggle.checked;
+                    tooltipLayers.forEach(({layer, name, isPoint}) => {
                         if (tooltipToggle.checked) {
-                            lyr.openTooltip();
+                            layer.bindTooltip(name, {
+                                permanent: true,
+                                direction: isPoint ? 'right' : 'center',
+                                offset: isPoint ? [10, 0] : [0, 0],
+                                className: 'feature-tooltip'
+                            });
+                            layer.openTooltip();
                         } else {
-                            lyr.closeTooltip();
+                            layer.unbindTooltip();
                         }
                     });
                 });
