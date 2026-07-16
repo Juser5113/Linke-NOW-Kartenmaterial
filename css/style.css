@@ -1,103 +1,211 @@
 :root {
-  --nav-bg: #1f2937;
-  --nav-fg: #f3f4f6;
-  --accent: #2c7fb8;
+    --nav-bg: #1f2937;
+    --nav-fg: #f3f4f6;
+    --accent: #2c7fb8;
 }
 
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 html, body {
-  margin: 0;
-  height: 100%;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    height: 100%;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 body {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 /* --- Navigation --- */
 nav.topnav {
-  background: var(--nav-bg);
-  color: var(--nav-fg);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 0 12px;
-  flex: 0 0 auto;
-  overflow-x: auto;
+    background: var(--nav-bg);
+    color: var(--nav-fg);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 12px;
+    flex: 0 0 auto;
+    overflow-x: auto;
 }
 
 nav.topnav a {
-  color: var(--nav-fg);
-  text-decoration: none;
-  padding: 14px 12px;
-  font-size: 0.95rem;
-  white-space: nowrap;
-  border-bottom: 3px solid transparent;
+    color: var(--nav-fg);
+    text-decoration: none;
+    padding: 14px 12px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
 }
 
 nav.topnav a:hover {
-  background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 nav.topnav a.active {
-  border-bottom-color: var(--accent);
-  font-weight: 600;
+    border-bottom-color: var(--accent);
+    font-weight: 600;
 }
 
 nav.topnav .brand {
-  font-weight: 700;
-  padding-right: 16px;
-  margin-right: 8px;
-  border-right: 1px solid rgba(255,255,255,0.2);
+    font-weight: 700;
+    padding-right: 16px;
+    margin-right: 8px;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* --- Layout: Legende links, Karte rechts --- */
+.layout {
+    flex: 1 1 auto;
+    display: flex;
+    min-height: 0; /* wichtig, damit Kinder innerhalb der verfügbaren Höhe scrollen können */
+}
+
+/* --- Legende (Sidebar) --- */
+.legend {
+    flex: 0 0 280px;
+    width: 280px;
+    overflow-y: auto;
+    background: #fff;
+    border-right: 1px solid #e5e7eb;
+    padding: 14px;
+}
+
+.legend h2 {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    color: #374151;
+}
+
+.legend ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.legend li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.legend li:hover,
+.legend li.legend-hover {
+    background: #f3f4f6;
+}
+
+.legend .legend-swatch {
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 2px solid #999;
+    margin-top: 2px; /* optischer Ausgleich zur ersten Textzeile */
+}
+
+.legend .legend-text {
+    min-width: 0; /* für text-overflow innerhalb von flex */
+}
+
+.legend .legend-name {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.legend .legend-link {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.legend .legend-link:hover {
+    text-decoration: underline;
+}
+
+.legend .legend-remarks {
+    margin-top: 3px;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: #4b5563;
+    white-space: normal;
+}
+
+.legend .legend-remarks a {
+    color: var(--accent);
+}
+
+.legend .legend-remarks p {
+    margin: 0 0 6px 0;
+}
+
+.legend .legend-remarks p:last-child {
+    margin-bottom: 0;
+}
+
+.legend .legend-empty {
+    font-size: 0.85rem;
+    color: #6b7280;
 }
 
 /* --- Kartenbereich --- */
 main {
-  flex: 1 1 auto;
-  position: relative;
+    flex: 1 1 auto;
+    position: relative;
+    min-width: 0;
 }
 
 #map {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-  width: 100%;
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
 }
 
 /* --- Popups --- */
 .leaflet-popup-content h3 {
-  margin: 0 0 6px 0;
-  font-size: 1rem;
+    margin: 0 0 6px 0;
+    font-size: 1rem;
 }
 
 .leaflet-popup-content img {
-  max-width: 220px;
-  display: block;
-  margin: 6px 0;
-  border-radius: 4px;
+    max-width: 220px;
+    display: block;
+    margin: 6px 0;
+    border-radius: 4px;
 }
 
 .leaflet-popup-content a {
-  color: var(--accent);
+    color: var(--accent);
 }
 
 .leaflet-popup-content p {
-  margin: 4px 0;
+    margin: 4px 0;
 }
 
 /* --- Ladehinweis / Fehler --- */
 .map-status {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  padding: 6px 14px;
-  border-radius: 4px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-  font-size: 0.9rem;
-  z-index: 1000;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 6px 14px;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    font-size: 0.9rem;
+    z-index: 1000;
 }
