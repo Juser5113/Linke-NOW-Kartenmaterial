@@ -12,11 +12,19 @@
  * }
  *
  * Erwartete Properties je Feature in der GeoJSON (alle optional):
- *   name         -> Überschrift im Popup
- *   beschreibung -> Fließtext im Popup
- *   bild         -> Bild-URL (relativ z.B. "img/foto.jpg" oder absolut)
- *   link         -> "Mehr erfahren"-Link
- *   farbe        -> Füll-/Linienfarbe für dieses Feature (überschreibt Standard)
+ *   name           -> Überschrift im Popup
+ *   beschreibung   -> Fließtext im Popup
+ *   bild           -> Bild-URL (relativ z.B. "img/foto.jpg" oder absolut)
+ *   link           -> "Mehr erfahren"-Link
+ *
+ * Farb-/Stil-Properties (simplestyle-spec, werden von geojson.io beim
+ * Einfärben im Editor automatisch selbst gesetzt – nicht manuell eintragen):
+ *   stroke         -> Linienfarbe (Polygon/Linie), Hex z.B. "#2c7fb8"
+ *   stroke-width   -> Linienbreite in Pixel, z.B. 2
+ *   stroke-opacity -> Deckkraft der Linie, Wertebereich 0–1 (nicht 0–100!)
+ *   fill           -> Füllfarbe (Polygon), Hex
+ *   fill-opacity   -> Deckkraft der Füllung, Wertebereich 0–1
+ *   marker-color   -> Farbe für Punkt-Marker, Hex
  */
 function initKartenseite(config) {
   const {
@@ -73,17 +81,29 @@ function initKartenseite(config) {
       loading.remove();
 
       const layer = L.geoJSON(data, {
-        style: feature => ({
-          color: feature.properties?.farbe || '#2c7fb8',
-          weight: 2,
-          fillOpacity: 0.3
-        }),
-        pointToLayer: (feature, latlng) =>
-          L.circleMarker(latlng, {
+        // Nutzt die simplestyle-spec-Properties, die geojson.io beim
+        // Einfärben im Editor automatisch selbst setzt:
+        // stroke, stroke-width, stroke-opacity, fill, fill-opacity, marker-color
+        style: feature => {
+          const p = feature.properties || {};
+          return {
+            color: p.stroke || '#2c7fb8',
+            weight: p['stroke-width'] ?? 2,
+            opacity: p['stroke-opacity'] ?? 1,
+            fillColor: p.fill || p.stroke || '#2c7fb8',
+            fillOpacity: p['fill-opacity'] ?? 0.3
+          };
+        },
+        pointToLayer: (feature, latlng) => {
+          const p = feature.properties || {};
+          return L.circleMarker(latlng, {
             radius: 8,
-            color: feature.properties?.farbe || '#2c7fb8',
-            fillOpacity: 0.7
-          }),
+            color: p['marker-color'] || p.stroke || '#2c7fb8',
+            weight: p['stroke-width'] ?? 2,
+            fillColor: p['marker-color'] || p.fill || '#2c7fb8',
+            fillOpacity: p['fill-opacity'] ?? 0.7
+          });
+        },
         onEachFeature: (feature, lyr) => {
           const html = popupHtml(feature.properties);
           if (html) lyr.bindPopup(html);
