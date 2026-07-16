@@ -4,7 +4,7 @@
 // gecachte alte Version aus.
 initKartenseite({
     geojson: 'data/uebersicht.geojson',
-    center: [52.541, 13.567],
+    center: [52.56005, 13.57226],
     zoom: 15,
     fitToData: false
 });
