@@ -1,0 +1,36 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Beispielstandort A",
+        "beschreibung": "Kurzer Beschreibungstext zu diesem Bereich.",
+        "link": "https://example.org",
+        "farbe": "#2c7fb8"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [13.560, 52.540],
+          [13.565, 52.540],
+          [13.565, 52.543],
+          [13.560, 52.543],
+          [13.560, 52.540]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Beispielpunkt B",
+        "beschreibung": "Ein einzelner Standort als Marker.",
+        "farbe": "#e34a33"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.572, 52.538]
+      }
+    }
+  ]
+}

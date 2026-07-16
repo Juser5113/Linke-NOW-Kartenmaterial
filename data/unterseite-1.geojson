@@ -1,0 +1,23 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Fläche X",
+        "beschreibung": "Beispiel für Unterseite 1 – hier eigene Daten eintragen.",
+        "farbe": "#31a354"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [13.575, 52.545],
+          [13.580, 52.545],
+          [13.580, 52.548],
+          [13.575, 52.548],
+          [13.575, 52.545]
+        ]]
+      }
+    }
+  ]
+}

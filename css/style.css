@@ -1,0 +1,103 @@
+:root {
+  --nav-bg: #1f2937;
+  --nav-fg: #f3f4f6;
+  --accent: #2c7fb8;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Navigation --- */
+nav.topnav {
+  background: var(--nav-bg);
+  color: var(--nav-fg);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px;
+  flex: 0 0 auto;
+  overflow-x: auto;
+}
+
+nav.topnav a {
+  color: var(--nav-fg);
+  text-decoration: none;
+  padding: 14px 12px;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+}
+
+nav.topnav a:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+nav.topnav a.active {
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+
+nav.topnav .brand {
+  font-weight: 700;
+  padding-right: 16px;
+  margin-right: 8px;
+  border-right: 1px solid rgba(255,255,255,0.2);
+}
+
+/* --- Kartenbereich --- */
+main {
+  flex: 1 1 auto;
+  position: relative;
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+}
+
+/* --- Popups --- */
+.leaflet-popup-content h3 {
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+}
+
+.leaflet-popup-content img {
+  max-width: 220px;
+  display: block;
+  margin: 6px 0;
+  border-radius: 4px;
+}
+
+.leaflet-popup-content a {
+  color: var(--accent);
+}
+
+.leaflet-popup-content p {
+  margin: 4px 0;
+}
+
+/* --- Ladehinweis / Fehler --- */
+.map-status {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 6px 14px;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  font-size: 0.9rem;
+  z-index: 1000;
+}

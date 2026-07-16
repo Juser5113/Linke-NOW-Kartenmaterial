@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Übersicht – Kartenseite</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <nav class="topnav">
+    <span class="brand">Kartenseite</span>
+    <a href="index.html" class="active">Übersicht</a>
+    <a href="unterseite-1.html">Unterseite 1</a>
+    <a href="unterseite-2.html">Unterseite 2</a>
+  </nav>
+
+  <main>
+    <div id="map"></div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/map.js"></script>
+  <script>
+    initKartenseite({
+      geojson: 'data/uebersicht.geojson',
+      center: [52.541, 13.567],
+      zoom: 14
+    });
+  </script>
+</body>
+</html>
