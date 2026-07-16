@@ -1,8 +1,9 @@
 #!/bin/sh
-# js/map.js and every js/config/*.js file share one global ?v= version
-# number across all HTML files. Whenever any of them is bumped anywhere,
-# the highest version found wins and gets written back to every
-# occurrence of any of these scripts in every HTML file.
+# js/map.js, every js/config/*.js file and css/style.css share one global
+# ?v= version number across all HTML files. Whenever any of them is bumped
+# anywhere, the highest version found wins and gets written back to every
+# occurrence of any of these files in every HTML file (adding ?v=... if an
+# occurrence doesn't have one yet).
 
 set -e
 
@@ -12,7 +13,8 @@ cd "$repo_root"
 html_files=$(git ls-files '*.html')
 [ -z "$html_files" ] && exit 0
 
-pattern='(js/map\.js|js/config/[A-Za-z0-9_-]+\.js)\?v=[0-9]+(\.[0-9]+)*'
+paths='(js/map\.js|js/config/[A-Za-z0-9_-]+\.js|css/style\.css)'
+pattern="${paths}\\?v=[0-9]+(\\.[0-9]+)*"
 
 versions=$(grep -ohE "$pattern" $html_files 2>/dev/null | sed -E 's/.*\?v=//') || true
 [ -z "$versions" ] && exit 0
@@ -21,7 +23,8 @@ max_version=$(printf '%s\n' "$versions" | sort -V | tail -1)
 
 changed=0
 for f in $html_files; do
-    sed -i -E "s#(js/map\.js|js/config/[A-Za-z0-9_-]+\.js)\?v=[0-9]+(\.[0-9]+)*#\1?v=${max_version}#g" "$f"
+    sed -i -E "s#${paths}\\?v=[0-9]+(\\.[0-9]+)*#\\1?v=${max_version}#g" "$f"
+    sed -i -E "s#${paths}\"#\\1?v=${max_version}\"#g" "$f"
     if ! git diff --quiet -- "$f"; then
         git add "$f"
         changed=1

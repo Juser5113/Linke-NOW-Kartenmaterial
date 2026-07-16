@@ -16,6 +16,11 @@
  *                     (Default: "bemerkungen")
  * }
  *
+ * Optionales Markup in der HTML-Seite:
+ *   <input type="checkbox" id="toggle-tooltip">  – schaltet permanente
+ *   Namens-Tooltips direkt auf der Karte ein/aus (Beschriftung ohne Hover).
+ *   Fehlt die Checkbox auf der Seite, hat das keine Auswirkung.
+ *
  * Erwartete Properties je Feature in der GeoJSON (alle optional):
  *   name           -> Überschrift im Popup UND in der Sidebar
  *   beschreibung   -> Fließtext im Popup (wird escaped, reiner Text)
@@ -156,11 +161,6 @@ function initKartenseite(config) {
         entries.forEach(entry => {
             const li = document.createElement('li');
 
-            const swatch = document.createElement('span');
-            swatch.className = 'legend-swatch';
-            swatch.style.background = entry.color;
-            swatch.style.borderColor = entry.color;
-
             const text = document.createElement('span');
             text.className = 'legend-text';
 
@@ -180,6 +180,14 @@ function initKartenseite(config) {
                     text.appendChild(remarksEl);
                 }
             } else {
+                // Farbfeld nur im legend-Modus – im info-Modus soll die Sidebar
+                // nicht wie eine klassische Legende aussehen.
+                const swatch = document.createElement('span');
+                swatch.className = 'legend-swatch';
+                swatch.style.background = entry.color;
+                swatch.style.borderColor = entry.color;
+                li.appendChild(swatch);
+
                 if (entry.link) {
                     const linkEl = document.createElement('a');
                     linkEl.className = 'legend-link';
@@ -194,7 +202,6 @@ function initKartenseite(config) {
                 }
             }
 
-            li.appendChild(swatch);
             li.appendChild(text);
             list.appendChild(li);
 
@@ -236,6 +243,9 @@ function initKartenseite(config) {
             // Layer erzeugt.
             const legendEntries = [];
 
+            // Layer, an denen ein Name-Tooltip hängt – für den "Namen anzeigen"-Toggle.
+            const tooltipLayers = [];
+
             const layer = L.geoJSON(data, {
                 // visibility: false blendet ein Feature komplett aus (Karte +
                 // Sidebar). Fehlt die Property oder ist sie true -> anzeigen.
@@ -263,6 +273,17 @@ function initKartenseite(config) {
                             layer: lyr,
                             baseStyle
                         });
+
+                        // Name-Tooltip vorbereiten (noch nicht permanent sichtbar –
+                        // das steuert der Toggle weiter unten). sticky: folgt der Maus.
+                        lyr.bindTooltip(escapeHtml(p.name), {
+                            permanent: false,
+                            direction: isPoint ? 'right' : 'center',
+                            offset: isPoint ? [10, 0] : [0, 0],
+                            className: 'feature-tooltip',
+                            sticky: true
+                        });
+                        tooltipLayers.push(lyr);
                     }
 
                     // Karte -> Legende: beim Hover über das Polygon/den Marker den
@@ -282,6 +303,31 @@ function initKartenseite(config) {
             }).addTo(map);
 
             renderLegend(legendEntries, sidebarMode);
+
+            // Toggle "Namen auf der Karte anzeigen": schaltet permanente
+            // Tooltips für alle benannten Features ein/aus. Checkbox ist
+            // optional – Seiten ohne #toggle-tooltip funktionieren unverändert.
+            const tooltipToggle = document.getElementById('toggle-tooltip');
+            if (tooltipToggle) {
+                tooltipToggle.addEventListener('change', () => {
+                    tooltipLayers.forEach(lyr => {
+                        const tooltip = lyr.getTooltip();
+                        if (!tooltip) return;
+                        tooltip.options.permanent = tooltipToggle.checked;
+                        tooltip.options.sticky = !tooltipToggle.checked;
+                        if (tooltipToggle.checked) {
+                            lyr.openTooltip();
+                        } else {
+                            lyr.closeTooltip();
+                        }
+                    });
+                });
+                // Anfangszustand anwenden, falls die Checkbox z.B. per Browser-
+                // Autofill schon angehakt geladen wird.
+                if (tooltipToggle.checked) {
+                    tooltipToggle.dispatchEvent(new Event('change'));
+                }
+            }
 
             if (fitToData && layer.getBounds().isValid()) {
                 map.fitBounds(layer.getBounds(), {padding: [30, 30]});

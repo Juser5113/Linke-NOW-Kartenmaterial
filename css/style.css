@@ -79,6 +79,34 @@ nav.topnav .brand {
     color: #374151;
 }
 
+.tooltip-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #374151;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    cursor: pointer;
+}
+
+.tooltip-toggle input {
+    cursor: pointer;
+}
+
+/* --- Name-Tooltips auf der Karte (via #toggle-tooltip) --- */
+.leaflet-tooltip.feature-tooltip {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    box-shadow: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #111827;
+    padding: 2px 6px;
+}
+
 .legend ul {
     list-style: none;
     margin: 0;
