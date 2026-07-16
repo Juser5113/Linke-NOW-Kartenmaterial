@@ -1,36 +1,61 @@
 {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Beispielstandort A",
-        "beschreibung": "Kurzer Beschreibungstext zu diesem Bereich.",
-        "link": "https://example.org",
-        "farbe": "#2c7fb8"
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[
-          [13.560, 52.540],
-          [13.565, 52.540],
-          [13.565, 52.543],
-          [13.560, 52.543],
-          [13.560, 52.540]
-        ]]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Beispielpunkt B",
-        "beschreibung": "Ein einzelner Standort als Marker.",
-        "farbe": "#e34a33"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [13.572, 52.538]
-      }
-    }
-  ]
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "stroke": "#FEAA00",
+                "stroke-width": 10,
+                "name": "Gebiet 8",
+                "link": "https://juser5113.github.io/Linke-Kartenmaterial/steckgebiet-8.html"
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        13.573119,
+                        52.550028
+                    ],
+                    [
+                        13.572392,
+                        52.547853
+                    ],
+                    [
+                        13.572896,
+                        52.547287
+                    ],
+                    [
+                        13.574468,
+                        52.547092
+                    ],
+                    [
+                        13.583053,
+                        52.549311
+                    ],
+                    [
+                        13.58236,
+                        52.550417
+                    ],
+                    [
+                        13.577484,
+                        52.551086
+                    ],
+                    [
+                        13.576933,
+                        52.549532
+                    ],
+                    [
+                        13.573111,
+                        52.55003
+                    ]
+                ]
+            },
+            "bbox": [
+                13.572392,
+                52.547092,
+                13.583053,
+                52.551086
+            ]
+        }
+    ]
 }
