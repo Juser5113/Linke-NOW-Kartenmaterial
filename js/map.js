@@ -14,6 +14,9 @@
  *   sidebarTitle:    Überschrift über der Sidebar (Default: "Legende" bzw. "Objekte")
  *   remarksProperty: Property-Name für den Bemerkungen-Text im "info"-Modus
  *                     (Default: "bemerkungen")
+ *   showPopup:       true (Default) – Klick auf ein Feature öffnet ein
+ *                     Popup mit Name/Bild/Beschreibung/Link.
+ *                     false -> kein Popup, Klick tut nichts.
  * }
  *
  * Optionales Markup in der HTML-Seite:
@@ -57,7 +60,8 @@ function initKartenseite(config) {
         fitToData = true,
         sidebarMode = 'legend',       // 'legend' | 'info'
         sidebarTitle,
-        remarksProperty = 'bemerkungen'
+        remarksProperty = 'bemerkungen',
+        showPopup = true              // false = kein Klick-Popup (Name/Bild/Beschreibung/Link) auf der Karte
     } = config;
 
     // Debug: zeigt genau, welche Config initKartenseite tatsächlich erhalten
@@ -290,8 +294,10 @@ function initKartenseite(config) {
                 style: feature => pathStyle(feature),
                 pointToLayer: (feature, latlng) => L.circleMarker(latlng, markerStyle(feature)),
                 onEachFeature: (feature, lyr) => {
-                    const html = popupHtml(feature.properties);
-                    if (html) lyr.bindPopup(html);
+                    if (showPopup) {
+                        const html = popupHtml(feature.properties);
+                        if (html) lyr.bindPopup(html);
+                    }
 
                     const p = feature.properties || {};
                     const isPoint = feature.geometry && feature.geometry.type === 'Point';

@@ -9,5 +9,6 @@ initKartenseite({
     fitToData: false,
     sidebarMode: 'info',
     sidebarTitle: 'Steckgebiet 1 - Bemerkungen',
-    remarksProperty: 'bemerkungen'
+    remarksProperty: 'bemerkungen',
+    showPopup: false
 });
