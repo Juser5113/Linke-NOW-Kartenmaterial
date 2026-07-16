@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Unterseite 1 – Kartenseite</title>
+    <title>Übersicht – Kartenseite</title>
     <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
     <link href="css/style.css" rel="stylesheet"/>
 </head>
@@ -12,21 +12,22 @@
 <nav class="topnav">
     <span class="brand">Kartenseite</span>
     <a href="index.html">Übersicht</a>
-    <a class="active" href="steckgebiet-8.html">Steckgebiet 8</a>
+    <a class="active" href="steckgebiet-1.html">Steckgebiet 1</a>
 </nav>
 
-<main>
-    <div id="map"></div>
-</main>
+<div class="layout">
+    <aside class="legend" id="legend">
+        <h2>Bemerkungen</h2>
+        <ul id="legend-list"></ul>
+    </aside>
+    <main>
+        <div id="map"></div>
+    </main>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="js/map.js"></script>
-<script>
-    initKartenseite({
-        geojson: 'data/unterseite-1.geojson',
-        center: [52.545, 13.577],
-        zoom: 14
-    });
-</script>
+<script src="js/map.js?v=1.0.4"></script>
+
+<script src="js/config/steckgebiet-1.js?v=1.0.0"></script>
 </body>
 </html>

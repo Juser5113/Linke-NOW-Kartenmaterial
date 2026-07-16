@@ -1,0 +1,42 @@
+#!/bin/sh
+# Keep js/map.js and js/config/*.js version query strings in sync across all
+# HTML files. Whenever a version differs between files, the highest one wins
+# and gets written back everywhere, then the fixed files are re-staged.
+
+set -e
+
+repo_root=$(git rev-parse --show-toplevel)
+cd "$repo_root"
+
+html_files=$(git ls-files '*.html')
+[ -z "$html_files" ] && exit 0
+
+pattern='(js/map\.js|js/config/[A-Za-z0-9_-]+\.js)\?v=[0-9]+(\.[0-9]+)*'
+
+pairs=$(grep -ohE "$pattern" $html_files 2>/dev/null | sed -E 's/\?v=/ /') || true
+[ -z "$pairs" ] && exit 0
+
+max_versions=$(printf '%s\n' "$pairs" | sort -k1,1 -k2,2V | awk '{ v[$1] = $2 } END { for (p in v) print p, v[p] }')
+
+changed=0
+while IFS=' ' read -r path version; do
+    [ -z "$path" ] && continue
+    escaped_path=$(printf '%s' "$path" | sed -E 's/[\/.]/\\&/g')
+    for f in $html_files; do
+        current=$(grep -oE "${escaped_path}\\?v=[0-9]+(\.[0-9]+)*" "$f" 2>/dev/null | head -1 | sed -E 's/.*\?v=//')
+        if [ -n "$current" ] && [ "$current" != "$version" ]; then
+            sed -i -E "s#${escaped_path}\?v=[0-9]+(\.[0-9]+)*#${path}?v=${version}#g" "$f"
+            git add "$f"
+            changed=1
+            echo "pre-commit: synced $path to v$version in $f (was v$current)"
+        fi
+    done
+done <<EOF
+$max_versions
+EOF
+
+if [ "$changed" -eq 1 ]; then
+    echo "pre-commit: version numbers synced, staged changes updated."
+fi
+
+exit 0

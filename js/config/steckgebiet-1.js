@@ -4,9 +4,10 @@
 // gecachte alte Version aus.
 initKartenseite({
     geojson: 'data/uebersicht.geojson',
-    center: [52.56005, 13.57226],
-    zoom: 15,
+    center: [52.56752, 13.56139],
+    zoom: 16,
     fitToData: false,
     sidebarMode: 'legend',
-    sidebarTitle: 'Legende'
+    sidebarTitle: 'Steckgebiet 1 - Bemerkungen',
+    remarksProperty: 'bemerkungen'
 });

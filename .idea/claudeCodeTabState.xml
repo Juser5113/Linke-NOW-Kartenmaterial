@@ -7,8 +7,9 @@
           <value>
             <TabSessionState>
               <option name="provider" value="claude" />
+              <option name="sessionId" value="1ba9dd38-6093-47af-a74f-339a92b7a0a5" />
               <option name="cwd" value="C:\Users\juser\OneDrive\Dokumente\Linke-Kartenmaterial" />
-              <option name="model" value="claude-sonnet-4-6" />
+              <option name="model" value="claude-sonnet-5[1m]" />
               <option name="permissionMode" value="bypassPermissions" />
             </TabSessionState>
           </value>

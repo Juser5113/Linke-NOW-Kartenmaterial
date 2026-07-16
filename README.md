@@ -59,6 +59,21 @@ Der ist für geringen Traffic in Ordnung, hat aber keine Verfügbarkeits-
 garantie. Bei mehr Traffic auf OpenFreeMap umsteigen – Anleitung dazu
 als Kommentar am Ende von `js/map.js`.
 
+## Versionsnummern von map.js / js/config/*.js synchron halten
+Jede HTML-Seite bindet `js/map.js` und ihre eigene `js/config/*.js`-Datei
+mit einer `?v=…`-Versionsnummer im `<script src="...">` ein (Cache-Busting).
+Ein pre-commit-Hook (`.githooks/pre-commit`) sorgt automatisch dafür, dass
+diese Versionsnummer für denselben Dateipfad in **allen** HTML-Dateien
+gleichgezogen wird – es gewinnt immer die höchste gefundene Version. Ändert
+man z.B. in `index.html` `js/map.js?v=1.0.4` auf `?v=1.0.5`, schreibt der
+Hook beim nächsten `git commit` automatisch `?v=1.0.5` in alle anderen
+HTML-Dateien und staged die Änderung mit.
+
+Einmalig nach dem Klonen aktivieren:
+```bash
+git config core.hooksPath .githooks
+```
+
 ## Größenlimits
 - GeoJSON-Dateien möglichst unter 10 MB halten (GitHub rendert größere
   Dateien nicht mehr automatisch im Repo-Viewer; der Browser wird bei
