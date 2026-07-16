@@ -53,8 +53,17 @@ function initKartenseite(config) {
         remarksProperty = 'bemerkungen'
     } = config;
 
+    // Debug: zeigt genau, welche Config initKartenseite tatsächlich erhalten
+    // hat. Wenn hier "legend" steht, obwohl du "info" konfiguriert hast,
+    // liegt das Problem in der Config-Datei bzw. deren Einbindung (Cache!),
+    // nicht in map.js selbst.
+    console.log('[Kartenseite] empfangene Config:', {
+        geojson, center, zoom, fitToData, sidebarMode, sidebarTitle, remarksProperty
+    });
+
     // Sidebar-Überschrift setzen (falls eine #legend-Sidebar auf der Seite existiert)
     const sidebarHeading = document.querySelector('#legend h2');
+    console.log('[Kartenseite] #legend h2 gefunden:', !!sidebarHeading);
     if (sidebarHeading) {
         sidebarHeading.textContent =
             sidebarTitle || (sidebarMode === 'info' ? 'Objekte' : 'Legende');
@@ -145,6 +154,7 @@ function initKartenseite(config) {
     //   mode 'legend' -> Farbfeld + Name + Link (Übersichtsseite)
     //   mode 'info'   -> Name + Bemerkungen als rohes HTML (Unterseiten)
     function renderLegend(entries, mode) {
+        console.log('[Kartenseite] renderLegend() mit mode =', mode, ', Anzahl Einträge:', entries.length);
         const list = document.getElementById('legend-list');
         if (!list) return; // Seite ohne Sidebar -> einfach überspringen
 
@@ -160,6 +170,10 @@ function initKartenseite(config) {
 
         entries.forEach(entry => {
             const li = document.createElement('li');
+
+            console.log('[Kartenseite] rendere Eintrag:', entry.name,
+                '| mode:', mode, '| remarks vorhanden:', !!entry.remarks,
+                '| remarks-Inhalt:', entry.remarks);
 
             const text = document.createElement('span');
             text.className = 'legend-text';
@@ -263,6 +277,13 @@ function initKartenseite(config) {
                     const isPoint = feature.geometry && feature.geometry.type === 'Point';
                     const baseStyle = isPoint ? markerStyle(feature) : pathStyle(feature);
                     const color = isPoint ? (p['marker-color'] || p.stroke || '#2c7fb8') : (p.stroke || '#2c7fb8');
+
+                    // Debug: zeigt alle Properties dieses Features und was unter dem
+                    // konfigurierten remarksProperty-Namen gefunden wurde. So siehst
+                    // du sofort, ob z.B. "Bemerkungen" statt "bemerkungen" verwendet
+                    // wurde, oder ob das Feld schlicht fehlt.
+                    console.log('[Kartenseite] Feature-Properties:', p,
+                        `-> remarksProperty="${remarksProperty}" liefert:`, p[remarksProperty]);
 
                     if (p.name) {
                         legendEntries.push({
