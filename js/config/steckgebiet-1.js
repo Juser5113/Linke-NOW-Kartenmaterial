@@ -7,7 +7,7 @@ initKartenseite({
     center: [52.56752, 13.56139],
     zoom: 16,
     fitToData: false,
-    sidebarMode: 'legend',
+    sidebarMode: 'info',
     sidebarTitle: 'Steckgebiet 1 - Bemerkungen',
     remarksProperty: 'bemerkungen'
 });
